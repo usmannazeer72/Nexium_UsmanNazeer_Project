@@ -1,6 +1,63 @@
 "use client";
+import { supabase } from "@/utils/supabaseClient";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
-export default function Dashboard() {
+function getDayLabel(date) {
+  return date.toLocaleDateString(undefined, { weekday: "short" });
+}
+
+function getDateKey(date) {
+  return date.toISOString().slice(0, 10);
+}
+
+export default function DashboardPage() {
+  const [userId, setUserId] = useState(null);
+  const [avgMood, setAvgMood] = useState(null);
+  const [weekEntries, setWeekEntries] = useState([]);
+  const [allEntries, setAllEntries] = useState([]);
+  const [aiInsight, setAiInsight] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function getUserAndData() {
+      const { data } = await supabase.auth.getUser();
+      if (!data?.user) {
+        router.replace("/");
+        return;
+      }
+      setUserId(data.user.id);
+      // Fetch dashboard data
+      const res = await fetch(`/api/entries/dashboard?userId=${data.user.id}`);
+      if (res.ok) {
+        const json = await res.json();
+        setAvgMood(json.avgMood);
+        setWeekEntries(json.weekEntries);
+        setAllEntries(json.allEntries);
+        setAiInsight(json.aiInsight);
+      }
+      setLoading(false);
+    }
+    getUserAndData();
+  }, [router]);
+
+  // Prepare heatmap data (group by date)
+  const heatmap = {};
+  allEntries.forEach((e) => {
+    const key = getDateKey(new Date(e.createdAt));
+    if (!heatmap[key]) heatmap[key] = [];
+    heatmap[key].push(e.mood);
+  });
+
+  // Prepare last 7 days for heatmap
+  const today = new Date();
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(today);
+    d.setDate(today.getDate() - (6 - i));
+    return d;
+  });
+
   return (
     <div className="min-h-screen flex bg-[#f7fafd]">
       {/* Sidebar */}
@@ -44,44 +101,70 @@ export default function Dashboard() {
           <h1 className="text-2xl font-bold text-[#16213e]">Dashboard</h1>
           <a
             href="/new-entry"
-            className="bg-[#1abc9c] text-white px-4 py-2 rounded-lg font-semibold hover:bg-[#16a085]"
+            className="bg-[#1abc9c] text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#16a085] transition"
           >
             + New Entry
           </a>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Calendar Heatmap */}
-          <div className="bg-white rounded-xl shadow p-6 col-span-2">
-            <div className="font-semibold mb-2">Calendar Heatmap</div>
-            <div className="flex flex-wrap gap-1">
-              {[...Array(35)].map((_, i) => (
-                <div
-                  key={i}
-                  className="w-6 h-6 rounded bg-[#d1fae5] border border-[#b6e4d8]"
-                />
-              ))}
+        {loading ? (
+          <div className="text-center text-gray-500">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Calendar Heatmap */}
+            <div className="bg-white rounded-xl shadow p-6 col-span-2">
+              <div className="font-semibold mb-2">Calendar Heatmap</div>
+              <div className="flex gap-2 justify-between mt-4">
+                {days.map((d) => {
+                  const key = getDateKey(d);
+                  const moods = heatmap[key] || [];
+                  const avg =
+                    moods.length > 0
+                      ? moods.reduce((a, b) => a + b, 0) / moods.length
+                      : null;
+                  return (
+                    <div
+                      key={key}
+                      className={`flex flex-col items-center gap-1`}
+                    >
+                      <div
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg font-bold border transition-all duration-150 ${
+                          avg == null
+                            ? "bg-gray-100 border-gray-200 text-gray-300"
+                            : avg >= 4
+                            ? "bg-green-200 border-green-400 text-green-700"
+                            : avg >= 3
+                            ? "bg-yellow-100 border-yellow-400 text-yellow-700"
+                            : "bg-red-100 border-red-400 text-red-700"
+                        }`}
+                        title={avg ? `Avg mood: ${avg.toFixed(1)}` : "No entry"}
+                      >
+                        {avg ? avg.toFixed(1) : "-"}
+                      </div>
+                      <span className="text-xs text-gray-400 mt-1">
+                        {getDayLabel(d)}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
-            <div className="flex justify-between text-xs text-gray-400 mt-2">
-              {["S", "M", "T", "W", "T", "F", "S"].map((d, i) => (
-                <span key={d + i}>{d}</span>
-              ))}
+            {/* Mood Summary Widget */}
+            <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center">
+              <div className="font-semibold mb-2">Mood Selector</div>
+              <div className="text-4xl font-bold text-[#1abc9c] mb-2">
+                {avgMood ? avgMood.toFixed(1) : "-"}
+              </div>
+              <div className="text-xs text-gray-400">7-day average mood</div>
+            </div>
+            {/* AI Insight Card */}
+            <div className="bg-white rounded-xl shadow p-6 col-span-1 flex flex-col gap-2">
+              <div className="font-semibold mb-2">AI Insight</div>
+              <div className="text-gray-700 text-sm min-h-[48px]">
+                {aiInsight || "No AI insight available yet."}
+              </div>
             </div>
           </div>
-          {/* Mood Selector */}
-          <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center justify-center">
-            <div className="font-semibold mb-2">Mood Selector</div>
-            <div className="text-3xl mb-2">4.2</div>
-            <div className="text-xs text-gray-400">7-day average need</div>
-          </div>
-          {/* AI Insight */}
-          <div className="bg-white rounded-xl shadow p-6 col-span-1">
-            <div className="font-semibold mb-2">AI Insight</div>
-            <div className="text-xs text-gray-500">
-              You’ve been feeling <span className="font-semibold">anxious</span>{" "}
-              lately. Try journaling or reach out to someone you trust.
-            </div>
-          </div>
-        </div>
+        )}
       </main>
     </div>
   );

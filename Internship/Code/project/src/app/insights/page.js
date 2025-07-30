@@ -1,6 +1,34 @@
 "use client";
+import { supabase } from "@/utils/supabaseClient";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function Insights() {
+  const [trend, setTrend] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [wordCloud, setWordCloud] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    async function getData() {
+      const { data } = await supabase.auth.getUser();
+      if (!data?.user) {
+        router.replace("/");
+        return;
+      }
+      const res = await fetch(`/api/entries/insights?userId=${data.user.id}`);
+      if (res.ok) {
+        const json = await res.json();
+        setTrend(json.trendAnalysis);
+        setSuggestions(json.suggestions);
+        setWordCloud(json.wordCloud);
+      }
+      setLoading(false);
+    }
+    getData();
+  }, [router]);
+
   return (
     <div className="min-h-screen flex bg-[#f7fafd]">
       {/* Sidebar */}
@@ -41,37 +69,52 @@ export default function Insights() {
       {/* Main Content */}
       <main className="flex-1 p-10 flex flex-col gap-6">
         <h1 className="text-2xl font-bold text-[#16213e] mb-6">AI Summary</h1>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Trend Analysis */}
-          <div className="bg-white rounded-xl shadow p-6 col-span-2">
-            <div className="font-semibold mb-2">Trend Analysis</div>
-            <div className="h-24 flex items-center justify-center text-gray-400">
-              [Trend Chart]
-            </div>
-            <div className="text-xs text-gray-400 mt-2">
-              You’ve had better on weekends
-            </div>
-          </div>
-          {/* Suggestions */}
-          <div className="bg-white rounded-xl shadow p-6 col-span-1 flex flex-col gap-4">
-            <div>
-              <div className="font-semibold mb-2">Suggestions</div>
-              <div className="text-xs text-gray-500">
-                Try meditating 5 mins daily
+        {loading ? (
+          <div className="text-center text-gray-500">Loading...</div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Trend Analysis */}
+            <div className="bg-white rounded-xl shadow p-6 col-span-2 flex flex-col gap-2">
+              <div className="font-semibold mb-2">Trend Analysis</div>
+              <div className="h-24 flex items-center text-gray-600 text-lg">
+                {trend || "Not enough data yet."}
               </div>
             </div>
-            <div>
+            {/* Suggestions */}
+            <div className="bg-white rounded-xl shadow p-6 col-span-1 flex flex-col gap-4">
               <div className="font-semibold mb-2">Suggestions</div>
-              <div className="flex flex-wrap gap-2 text-lg">
-                <span className="text-blue-600">anxious</span>
-                <span className="text-green-600">happy</span>
-                <span className="text-gray-600">fine</span>
-                <span className="text-green-700">sad</span>
-                <span className="text-blue-400">stressed</span>
+              <ul className="list-disc ml-5 text-gray-700 text-sm">
+                {suggestions.length ? (
+                  suggestions.map((s, i) => <li key={i}>{s}</li>)
+                ) : (
+                  <li>No suggestions yet.</li>
+                )}
+              </ul>
+            </div>
+            {/* Mood Word Cloud */}
+            <div className="bg-white rounded-xl shadow p-6 col-span-3 flex flex-col gap-2">
+              <div className="font-semibold mb-2">Mood Word Cloud</div>
+              <div className="flex flex-wrap gap-3 items-center">
+                {wordCloud.length ? (
+                  wordCloud.map(({ tag, count }) => (
+                    <span
+                      key={tag}
+                      className="text-lg font-semibold"
+                      style={{
+                        fontSize: `${1 + count * 0.4}rem`,
+                        color: "#1abc9c",
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-gray-400">No tags yet.</span>
+                )}
               </div>
             </div>
           </div>
-        </div>
+        )}
       </main>
     </div>
   );

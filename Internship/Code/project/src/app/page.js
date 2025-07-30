@@ -36,7 +36,7 @@ export default function Home() {
       setSuccess(true);
       // Redirect to dashboard after a short delay
       setTimeout(() => {
-        router.push("/dashboard");
+        router.push("/new-entry");
       }, 1000);
     }
   }
