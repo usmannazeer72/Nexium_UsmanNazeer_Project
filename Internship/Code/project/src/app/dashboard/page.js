@@ -17,6 +17,7 @@ export default function DashboardPage() {
   const [weekEntries, setWeekEntries] = useState([]);
   const [allEntries, setAllEntries] = useState([]);
   const [aiInsight, setAiInsight] = useState(null);
+  const [aiSummary, setAiSummary] = useState(null); // summary
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -36,6 +37,16 @@ export default function DashboardPage() {
         setWeekEntries(json.weekEntries);
         setAllEntries(json.allEntries);
         setAiInsight(json.aiInsight);
+      }
+      // Fetch AI summary from Gemini
+      const aiRes = await fetch("/api/ai-summary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: data.user.id }),
+      });
+      if (aiRes.ok) {
+        const aiJson = await aiRes.json();
+        setAiSummary(aiJson.summary || null);
       }
       setLoading(false);
     }
@@ -67,7 +78,7 @@ export default function DashboardPage() {
             <div className="bg-[#1abc9c] rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">
               A
             </div>
-            <span className="font-semibold text-lg">MeHalin</span>
+            <span className="font-semibold text-lg">AuraTrack</span>
           </div>
           <nav className="flex flex-col gap-2">
             <a
@@ -160,7 +171,7 @@ export default function DashboardPage() {
             <div className="bg-white rounded-xl shadow p-6 col-span-1 flex flex-col gap-2">
               <div className="font-semibold mb-2">AI Insight</div>
               <div className="text-gray-700 text-sm min-h-[48px]">
-                {aiInsight || "No AI insight available yet."}
+                {aiSummary || "No summary available."}
               </div>
             </div>
           </div>

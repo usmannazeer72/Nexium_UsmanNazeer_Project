@@ -89,7 +89,7 @@ export default function NewEntryPage() {
             <div className="bg-[#1abc9c] rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">
               A
             </div>
-            <span className="font-semibold text-lg">MeHalin</span>
+            <span className="font-semibold text-lg">AuraTrack</span>
           </div>
           <nav className="flex flex-col gap-2">
             <a
