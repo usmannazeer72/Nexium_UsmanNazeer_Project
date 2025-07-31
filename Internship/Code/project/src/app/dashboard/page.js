@@ -103,8 +103,7 @@ export default function DashboardPage() {
           </nav>
         </div>
         <div className="flex flex-col gap-1 text-xs text-white/70">
-          <span>Nethor@example.com</span>
-          <span>Darn-iherds</span>
+          <span>{userEmail || "No email found"}</span>
         </div>
       </aside>
       {/* Main Content */}

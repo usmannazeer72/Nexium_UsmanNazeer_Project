@@ -26,7 +26,8 @@ export default function Home() {
       email,
       options: {
         shouldCreateUser: true,
-        emailRedirsectTo: "http://localhost:3000/dashboard",
+        emailRedirsectTo:
+          "https://nexium-usman-nazeer-project.vercel.app/dashboard",
       },
     });
     setLoading(false);
