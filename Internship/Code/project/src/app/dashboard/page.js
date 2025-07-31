@@ -14,6 +14,7 @@ function getDateKey(date) {
 
 export default function DashboardPage() {
   const [userId, setUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState("");
   const [avgMood, setAvgMood] = useState(null);
   const [weekEntries, setWeekEntries] = useState([]);
   const [allEntries, setAllEntries] = useState([]);
@@ -30,6 +31,7 @@ export default function DashboardPage() {
         return;
       }
       setUserId(data.user.id);
+      setUserEmail(data.user.email || "");
       // Fetch dashboard data
       const res = await fetch(`/api/entries/dashboard?userId=${data.user.id}`);
       if (res.ok) {
@@ -82,24 +84,24 @@ export default function DashboardPage() {
             <span className="font-semibold text-lg">AuraTrack</span>
           </div>
           <nav className="flex flex-col gap-2">
-            <a
-              href="/dashboard"
+            <Button
+              asChild
+              className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
+            >
+              <a href="/dashboard">Dashboard</a>
+            </Button>
+            <Button
+              asChild
+              className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
+            >
+              <a href="/new-entry">New Entry</a>
+            </Button>
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 bg-white/10 font-medium"
             >
-              Dashboard
-            </a>
-            <a
-              href="/new-entry"
-              className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
-            >
-              New Entry
-            </a>
-            <a
-              href="/insights"
-              className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
-            >
-              Insights
-            </a>
+              <a href="/insights">Insights</a>
+            </Button>
           </nav>
         </div>
         <div className="flex flex-col gap-1 text-xs text-white/70">

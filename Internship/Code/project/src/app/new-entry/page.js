@@ -31,6 +31,7 @@ export default function NewEntryPage() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [userId, setUserId] = useState(null);
+  const [userEmail, setUserEmail] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -38,6 +39,7 @@ export default function NewEntryPage() {
       const { data, error } = await supabase.auth.getUser();
       if (data?.user) {
         setUserId(data.user.id);
+        setUserEmail(data.user.email || "");
       } else {
         router.replace("/"); // redirect to login if not authenticated
       }
