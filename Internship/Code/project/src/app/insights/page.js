@@ -1,5 +1,6 @@
 "use client";
 import TrendsChart from "@/components/TrendsChart";
+import { Button } from "@/components/ui/button";
 import WordCloud from "@/components/WordCloud";
 import { supabase } from "@/utils/supabaseClient";
 import { useRouter } from "next/navigation";
@@ -50,24 +51,24 @@ export default function Insights() {
             <span className="font-semibold text-lg">AuraTrack</span>
           </div>
           <nav className="flex flex-col gap-2">
-            <a
-              href="/dashboard"
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
             >
-              Dashboard
-            </a>
-            <a
-              href="/new-entry"
+              <a href="/dashboard">Dashboard</a>
+            </Button>
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
             >
-              New Entry
-            </a>
-            <a
-              href="/insights"
+              <a href="/new-entry">New Entry</a>
+            </Button>
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 bg-white/10 font-medium"
             >
-              Insights
-            </a>
+              <a href="/insights">Insights</a>
+            </Button>
           </nav>
         </div>
         <div className="flex flex-col gap-1 text-xs text-white/70">

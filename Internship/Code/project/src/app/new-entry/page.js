@@ -1,5 +1,7 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/utils/supabaseClient";
+import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -81,96 +83,157 @@ export default function NewEntryPage() {
   };
 
   return (
-    <div className="min-h-screen flex bg-[#f7fafd]">
+    <motion.div
+      className="min-h-screen flex bg-[#f7fafd]"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6 }}
+    >
       {/* Sidebar */}
-      <aside className="w-64 bg-[#16213e] text-white flex flex-col justify-between py-8 px-6 min-h-screen">
+      <motion.aside
+        className="w-64 bg-[#16213e] text-white flex flex-col justify-between py-8 px-6 min-h-screen"
+        initial={{ x: -80, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 80, damping: 18, delay: 0.1 }}
+      >
         <div>
-          <div className="flex items-center gap-3 mb-10">
+          <motion.div
+            className="flex items-center gap-3 mb-10"
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
             <div className="bg-[#1abc9c] rounded-full w-10 h-10 flex items-center justify-center text-lg font-bold">
               A
             </div>
             <span className="font-semibold text-lg">AuraTrack</span>
-          </div>
+          </motion.div>
           <nav className="flex flex-col gap-2">
-            <a
-              href="/dashboard"
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
             >
-              Dashboard
-            </a>
-            <a
-              href="/new-entry"
+              <a href="/dashboard">Dashboard</a>
+            </Button>
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 bg-white/10 font-medium"
             >
-              New Entry
-            </a>
-            <a
-              href="/insights"
+              <a href="/new-entry">New Entry</a>
+            </Button>
+            <Button
+              asChild
               className="rounded-lg px-3 py-2 hover:bg-white/10 font-medium"
             >
-              Insights
-            </a>
+              <a href="/insights">Insights</a>
+            </Button>
           </nav>
         </div>
         <div className="flex flex-col gap-1 text-xs text-white/70">
           <span>Nethor@example.com</span>
           <span>Darn-iherds</span>
         </div>
-      </aside>
+      </motion.aside>
       {/* Main Content */}
-      <main className="flex-1 flex justify-center items-start p-10">
-        <form
+      <motion.main
+        className="flex-1 flex justify-center items-start p-10"
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 70, damping: 16, delay: 0.25 }}
+      >
+        <motion.form
           onSubmit={handleSubmit}
           className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-lg flex flex-col gap-8"
+          initial={{ scale: 0.96, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{
+            type: "spring",
+            stiffness: 90,
+            damping: 18,
+            delay: 0.35,
+          }}
         >
-          <h1 className="text-2xl font-bold mb-2">New Entry</h1>
+          <motion.h1
+            className="text-2xl font-bold mb-2"
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            New Entry
+          </motion.h1>
           {/* Mood Selector */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45 }}
+          >
             <label className="block font-medium mb-3 text-gray-700">
               Mood Selector
             </label>
             <div className="flex gap-4 justify-center">
-              {MOODS.map((m) => (
-                <button
-                  type="button"
+              {MOODS.map((m, i) => (
+                <motion.div
                   key={m.value}
-                  className={`text-4xl p-2 rounded-full border-2 transition-all duration-150 ${
-                    mood === m.value
-                      ? "border-[#1abc9c] bg-[#e8faf6] scale-110"
-                      : "border-gray-200 bg-white"
-                  }`}
-                  onClick={() => setMood(m.value)}
-                  aria-label={`Mood ${m.value}`}
+                  whileHover={{ scale: 1.15 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  {m.emoji}
-                </button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={`text-4xl p-2 rounded-full border-2 transition-all duration-150 ${
+                      mood === m.value
+                        ? "border-[#1abc9c] bg-[#e8faf6] scale-110"
+                        : "border-gray-200 bg-white"
+                    }`}
+                    onClick={() => setMood(m.value)}
+                    aria-label={`Mood ${m.value}`}
+                  >
+                    {m.emoji}
+                  </Button>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
           {/* Tags Picker */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+          >
             <label className="block font-medium mb-3 text-gray-700">
               Tags/Emotions
             </label>
             <div className="flex flex-wrap gap-2">
-              {TAGS.map((tag) => (
-                <button
-                  type="button"
+              {TAGS.map((tag, i) => (
+                <motion.div
                   key={tag}
-                  className={`px-4 py-1 rounded-full border text-sm transition-all duration-150 ${
-                    tags.includes(tag)
-                      ? "bg-[#e8faf6] border-[#1abc9c] text-[#1abc9c] font-semibold"
-                      : "bg-gray-100 border-gray-300 text-gray-600"
-                  }`}
-                  onClick={() => handleTagToggle(tag)}
+                  whileHover={{ scale: 1.08 }}
+                  whileTap={{ scale: 0.95 }}
+                  transition={{ type: "spring", stiffness: 300 }}
                 >
-                  {tag}
-                </button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className={`px-4 py-1 rounded-full border text-sm transition-all duration-150 ${
+                      tags.includes(tag)
+                        ? "bg-[#e8faf6] border-[#1abc9c] text-[#1abc9c] font-semibold"
+                        : "bg-gray-100 border-gray-300 text-gray-600"
+                    }`}
+                    onClick={() => handleTagToggle(tag)}
+                  >
+                    {tag}
+                  </Button>
+                </motion.div>
               ))}
             </div>
-          </div>
+          </motion.div>
           {/* Journal Text Area */}
-          <div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55 }}
+          >
             <label className="block font-medium mb-3 text-gray-700">
               Journal entry
             </label>
@@ -181,9 +244,14 @@ export default function NewEntryPage() {
               placeholder="Write about your day..."
               required
             />
-          </div>
+          </motion.div>
           {/* AI Summary Toggle */}
-          <div className="flex items-center gap-3">
+          <motion.div
+            className="flex items-center gap-3"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
             <label className="flex items-center cursor-pointer">
               <div className="relative">
                 <input
@@ -205,21 +273,43 @@ export default function NewEntryPage() {
               </div>
               <span className="ml-3 text-gray-700">Let AI summarize this?</span>
             </label>
-          </div>
+          </motion.div>
           {/* Save Button */}
-          <button
-            type="submit"
-            className="w-full bg-[#1abc9c] text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-[#16a085] transition-all duration-150 disabled:opacity-50"
-            disabled={loading || !mood || !journal || !userId}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65 }}
           >
-            {loading ? "Saving..." : "Save Entry"}
-          </button>
+            <Button
+              type="submit"
+              className="w-full bg-[#1abc9c] text-white py-3 rounded-xl font-semibold text-lg shadow-md hover:bg-[#16a085] transition-all duration-150 disabled:opacity-50"
+              disabled={loading || !mood || !journal || !userId}
+            >
+              {loading ? "Saving..." : "Save Entry"}
+            </Button>
+          </motion.div>
           {success && (
-            <div className="text-green-600 text-center">Entry saved!</div>
+            <motion.div
+              className="text-green-600 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              Entry saved!
+            </motion.div>
           )}
-          {error && <div className="text-red-600 text-center">{error}</div>}
-        </form>
-      </main>
-    </div>
+          {error && (
+            <motion.div
+              className="text-red-600 text-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {error}
+            </motion.div>
+          )}
+        </motion.form>
+      </motion.main>
+    </motion.div>
   );
 }

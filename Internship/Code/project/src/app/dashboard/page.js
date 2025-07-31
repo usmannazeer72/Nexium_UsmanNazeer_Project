@@ -1,4 +1,5 @@
 "use client";
+import { Button } from "@/components/ui/button";
 import { supabase } from "@/utils/supabaseClient";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -110,12 +111,12 @@ export default function DashboardPage() {
       <main className="flex-1 p-10 flex flex-col gap-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold text-[#16213e]">Dashboard</h1>
-          <a
-            href="/new-entry"
+          <Button
+            asChild
             className="bg-[#1abc9c] text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-[#16a085] transition"
           >
-            + New Entry
-          </a>
+            <a href="/new-entry">+ New Entry</a>
+          </Button>
         </div>
         {loading ? (
           <div className="text-center text-gray-500">Loading...</div>
